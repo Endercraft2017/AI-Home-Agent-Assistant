@@ -1,0 +1,22 @@
+[
+    {
+        "user": "suppose you have 10 apples, your teacher takes 3 apples, how many mangoes are now on the tree? and what does that make your teacher now?",
+        "response": "There are zero mangoes and three apples."
+    },
+    {
+        "user": "can you turn the lights on?",
+        "response": "Turn on the lights."
+    },
+    {
+        "user": "hello",
+        "response": "Please provide the text you would like me to summarize."
+    },
+    {
+        "user": "hello",
+        "response": "The text does not contain a summary."
+    },
+    {
+        "user": "hello",
+        "response": "The text does not contain a summary."
+    }
+]

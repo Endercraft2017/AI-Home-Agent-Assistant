@@ -1,0 +1,91 @@
+/ai_agent/
+├── main.py                → main app runner
+├── tools/
+│   ├── __init__.py
+│   ├── microcontroller.py
+│   ├── search.py
+│   ├── music.py
+│   ├── weather.py
+│   ├── notes.py
+│   ├── query.py
+│   └── reminder.py
+├── agent/
+│   ├── instructions.py    → LLM prompt templates
+│   ├── json_helper.py     → Json load and save
+│   ├── sqlite_helper.py   → Structured memory logic
+│   ├── vector_helper.py   → Vector database logic (tool selection, history, notes and reminders management)
+│   ├── states.py          → state machine logic
+│   ├── llm.py             → LLM wrappers (Ollama)
+│   └── tool_parser.py     → parses user prompt into tool params
+├── memory/
+│   └── notes_store.json           → or SQLite later
+│   └── reminder_store.json        → or SQLite later
+│   └── conversation_memory.json   → store short term memory for chat context
+│   └── conversation_history.text  → or SQLite later, for long term memory of chat history
+├── models/
+│   └── embeddings_index.pkl → tool index for matching
+└── config.py              → API keys, settings
+
+------Posible states-------
+idle
+listening
+thinking
+choosing tool
+using tool
+generate response
+
+------Chunked agent steps------
+[User Prompt] (with chat context)
+     ↓
+[Intent Detection] (LLM or rules)
+     ↓
+[Tool Decision State]
+     ├──→ [Vector DB Tool Match]
+     └──→ [General Chat Fallback]
+     ↓
+[Tool Param Parsing] (LLM)
+     ↓
+[Tool Execution] (Python)
+     ↓
+[Response Generation] (LLM or template)
+     ↓
+[Reply to User]
+
+
+Current working available tools and their current working available functions:
+/reminder/
+├── set              (Completed, tested - no llm)
+├── update           (Completed, tested - no llm)
+├── get              
+│   ├── by content   (Completed, tested - no llm)
+│   ├── by date      (Completed, tested - no llm)
+│   ├── all          (Possibly add for the future) [FUTURE UPDATE]
+│   └── cancelled    (Possibly add for the future) [FUTURE UPDATE]
+├── cancel
+    ├── by content   (Completed, not yet tested)
+    └── by date      (Completed, tested - no llm)
+
+/note/
+├── set              (Completed, tested - no llm)
+├── update           (Completed, tested - no llm)
+├── get              (Completed, tested - no llm)
+│   └── all          (Possibly add for the future)  [FUTURE UPDATE]
+└── delete           (Completed, tested - no llm)
+
+/microcontroller/
+├── add
+├── remove
+├── on 
+├── off    
+└── get
+
+
+
+To Do:
+add get and update logic for note.py
+
+fix tool selection and tools long description
+
+fix main.py and try to run first the reminder and note tool
+
+[IMPORTANT]: Add Exception to every function follow the ones in sqlite_helper.py
