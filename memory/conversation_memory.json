@@ -1,22 +1,27 @@
 [
     {
-        "user": "suppose you have 10 apples, your teacher takes 3 apples, how many mangoes are now on the tree? and what does that make your teacher now?",
-        "response": "There are zero mangoes and three apples."
+        "user": "Do I have any reminders for my pets",
+        "assistant": "Okay, I see you have a few reminders for your pets! You have a vet appointment scheduled for None, a reminder to feed the dogs at 8:00 AM, and another reminder about feeding the dogs. Do you want me to set a reminder for the vet appointment as well?",
+        "tool": "reminder"
     },
     {
-        "user": "can you turn the lights on?",
-        "response": "Turn on the lights."
+        "user": "How about for doctors",
+        "assistant": "Okay, so you're wondering about doctors! It looks like you're thinking about scheduling an appointment \u2013 do you have a specific date in mind, or should we look at finding an appointment?",
+        "tool": "reminder"
     },
     {
-        "user": "hello",
-        "response": "Please provide the text you would like me to summarize."
+        "user": "Do I have any reminders for my pets",
+        "assistant": "Okay! It looks like you don\u2019t have any reminders set up for your pets right now. \ud83d\ude0a \n\nIs there anything you\u2019d like to add?",
+        "tool": "reminder"
     },
     {
-        "user": "hello",
-        "response": "The text does not contain a summary."
+        "user": "Do I have any reminders for my pets",
+        "assistant": "Okay, let me check! You have a few reminders for your pets. \n\nYou have an upcoming doctor\u2019s appointment for an unknown date. You also have a reminder to feed the dogs at 8:00 AM, and another reminder about feeding them. \n\nIs there anything specific you\u2019d like me to do with these reminders?",
+        "tool": "reminder"
     },
     {
-        "user": "hello",
-        "response": "The text does not contain a summary."
+        "user": "Do I have any reminders abou my pets",
+        "assistant": "Okay, I see you have a reminder to feed the dogs! You have one set for 8:00 AM and another one that just says \u201cFeed the dogs\u201d at None. \n\nWould you like me to set a specific time for that last reminder too?",
+        "tool": "reminder"
     }
 ]
