@@ -7,7 +7,7 @@ from .sqlite_helper import insert_conversation_pair
 JSON_MEMORY_FILE = "memory/conversation_memory.json"
 GET_ID_FILE = "memory/get_id.json"
 
-def save_conversation_json(user_text, response_text, memory_file=JSON_MEMORY_FILE, max_json=MAX_CONVERSATION_HISTORY):
+def save_conversation_json(user_text, response_text,tool, memory_file=JSON_MEMORY_FILE, max_json=MAX_CONVERSATION_HISTORY):
     # Load existing data or start new list
     if os.path.exists(memory_file):
         with open(memory_file, "r", encoding="utf-8") as f:
@@ -19,12 +19,12 @@ def save_conversation_json(user_text, response_text, memory_file=JSON_MEMORY_FIL
         data = []
 
     # Append new conversation
-    data.append({"user": user_text, "response": response_text})
+    data.append({"user": user_text, "assistant": response_text, "tool": tool})
 
     # If more than max_json, move the oldest to text file and shift
     while len(data) > max_json:
         oldest = data.pop(0)
-        insert_conversation_pair(oldest["user"],oldest["response"])
+        insert_conversation_pair(oldest["user"],oldest["assistant"])
 
     # Save back to JSON file
     with open(memory_file, "w", encoding="utf-8") as f:
@@ -38,6 +38,18 @@ def load_conversations_json(memory_file=JSON_MEMORY_FILE):
             return json.load(f)
         except json.JSONDecodeError:
             return []
+        
+### For formatting the chat history
+def format_conversation_history(conversations, max_turns=MAX_CONVERSATION_HISTORY):
+    """
+    Format the last `max_turns` of chat history for context.
+    """
+    blocks = []
+    for convo in conversations[-max_turns:]:
+        user = convo.get("user", "").strip()
+        reply = convo.get("assistant", "").strip()
+        blocks.append(f"User: {user}\nAssistant: {reply}")
+    return "\n\n".join(blocks)
 
 ### For saving and loading the last "get" reminder
 

@@ -18,7 +18,7 @@ def build_tool_index():
     index = faiss.IndexFlatL2(EMBEDDING_DIM)
     id_map = []
     for name, module in ALL_TOOLS.items():
-        desc = module.TOOL_SCHEMA["description"]
+        desc = module.TOOL_LONG_DESCRIPTION
         vec = np.array([embed_text(desc)], dtype="float32")
         index.add(vec)
         id_map.append(name)
@@ -33,6 +33,74 @@ def search_tool(prompt, top_k=1):
     vec = np.array([embed_text(prompt)], dtype="float32")
     D, I = index.search(vec, top_k)
     return id_map[I[0][0]]
+
+###Building Contextual Query for tools
+def is_followup(message: str) -> bool:
+    message = message.lower().strip()
+    followup_starts = ("what about","how about","and","also","what else","more about","that too","can you also","let's add","include","add that too","continue with","follow up with","as well","do the same for","like before","just like that","same for","similar to that","another one","next one","that again","repeat for","same thing but","now do","in addition","okay then","alright then","back to that",)
+    return message.startswith(followup_starts)
+
+def is_followup_request(message: str) -> bool:
+    message = message.lower().strip()
+
+    # Key phrases that signal a follow-up prompt
+    followup_phrases = (
+        "would you like me to","do you want me to","should i also","should i go ahead and","want me to","is that okay","would that be fine","shall i","do you also want","do you want to","need me to","would you like to","should we","need help with the rest","should i repeat that","should i apply that","need to adjust","should i set","want to change","should we continue","can i update","can i add","shall we add","should i modify","should we change","let me know if","let me know what","tell me if","anything else you need","want me to handle that too","would you like to continue","should i do the same","can i help with that","should i fix that as well","want me to fix that","need me to change it","can i assist you further","want to proceed"
+    )
+
+    for phrase in followup_phrases:
+        if phrase in message:
+            return True
+
+    # Basic question detection for soft prompts
+    if message.endswith("?") and any(word in message for word in ("should", "want", "like", "can", "shall", "need", "continue", "help", "add")):
+        return True
+
+    return False
+
+
+def build_contextual_query(user_input, last_chat) -> str:
+    followup = is_followup(user_input)
+    print(f"[DEBUG] followup vector_helper.py: {followup}")
+
+    # No follow-up detected → return as-is
+    if not followup:
+        return user_input
+
+    # No tool previously used → skip attaching context
+    if last_chat["tool"] == "NONE":
+        return user_input
+
+    # Standard follow-up: attach the last user query
+    return f"Following up on '{last_chat['user']}': {user_input}"
+
+def build_contextual_query_followup(user_input, last_chat) -> str:
+    followup = is_followup(user_input)
+    followup_request = is_followup_request(user_input)
+    print(f"[DEBUG] followup vector_helper.py: {followup}, request: {followup_request}")
+
+    # No follow-up detected → return as-is
+    if not followup and not followup_request:
+        return user_input
+
+    # No tool previously used → skip attaching context unless it's a follow-up request
+    if last_chat["tool"] == "NONE" and not followup_request:
+        return user_input
+
+    # If the assistant asked a follow-up (request), include both user & assistant context
+    if followup_request and last_chat["tool"] == "NONE":
+        return f"Assistant said: '{last_chat['assistant']}' \n User: {user_input}"
+
+    if followup_request and last_chat["tool"] != "NONE":
+        return f"""
+        Following up on conversation:
+        User said: '{last_chat['user']}'
+        Assistant said: '{last_chat['assistant']}'
+
+        User Now: {user_input}""" 
+
+    # Standard follow-up: attach the last user query
+    return f"Following up on '{last_chat['user']}': {user_input}"
 
 ### Memory Embeddings
 def build_memory_index(db_path, table, column="content", out_file="memory_index.pkl"):
@@ -102,10 +170,6 @@ def search_vector(prompt, index_file="reminder_index.pkl", top_k=3, threshold=0.
 
     return results
 
-
-
- ## add search and build note here
-
 def search_and_fetch(prompt, db_path, table, column="content", top_k=3, index_file=None):
     if index_file is None:
         index_file = f"{table}_index.pkl"
@@ -131,8 +195,6 @@ def get_reminder(prompt, db_path="memory/history.db", top_k=3):
 def get_chat_history(prompt, db_path="memory/history.db", top_k=3):
     return search_and_fetch(prompt, db_path, table="chat_history", column="content", index_file="chat_index.pkl")
 
-#Use this to search notes
- ##Add note search logic here
 
 #Add to vector db index
 def append_to_index(index_file, text, row_id, table):
