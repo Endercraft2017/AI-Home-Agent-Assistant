@@ -1,7 +1,9 @@
 #OLLAMA_URL = "http://192.168.1.131:11434"
 OLLAMA_URL = "http://127.0.0.1:11434" ### temporary test for laptop ollama
-DEFAULT_MODEL = "gemma3:4b"
-EMBED_MODEL = "mxbai-embed-large"
+
+EMBED_MODEL = "multilingual-e5-base-F16.gguf"
+DEFAULT_MODEL = "gemma-3-4b-it.Q4_K_M.gguf"
+LLAMA_CPP_MODEL_DIR = "models"  # directory where models are stored
 
 MAX_CONVERSATION_HISTORY = 5
 

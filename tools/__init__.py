@@ -9,7 +9,3 @@ ALL_TOOLS = {
     "query": query,
     "reminder": reminder
 }
-
-ALL_TOOLS_LONG_DESCRIPTION = {
-    "reminder" : reminder.TOOL_LONG_DESCRIPTION 
-}

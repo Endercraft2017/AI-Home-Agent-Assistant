@@ -6,23 +6,43 @@ def run(params):
     ##Return result
 
 TOOL_LONG_DESCRIPTION = """
-A tool to set a reminder, update a reminder, fetch or get a reminder, and cancel a reminder for the user.
-Use this tool when the user want anything to do about reminders.
+A tool to retrieve the current weather forecast based on the user's location.
+
+Use this tool when the user asks about the weather — including temperature, rain, humidity, or other conditions — either generally or for a specific place.
+
+If the user does **not** specify a location, assume they mean their current location (retrieved by the assistant automatically). If they mention a city, region, or country, pass that as the `Location` parameter.
 
 Example use cases:
 
-User: Add a reminder for going to the dentist tommorow at 3 pm
-User: Set a reminder for my dinner later at 7 pm
-User: I need a reminder for ...
-User: Remind me about my ...
-User: Can you cancel my reminder for ...
-User: Do I have a reminder set for tommorow?
-User: Can you look if I have a reminder for ...
-User: I need you to change my reminder for ...
-User: can you update my reminder to ...
+User: What's the weather like today?  
+User: Is it going to rain later?  
+User: Can you check the weather in Manila?  
+User: What's the temperature outside?  
+User: Show me the forecast for tomorrow in Baguio  
+User: Do I need an umbrella today?  
+User: What's the humidity right now?
+
+Use this tool only for weather-related queries and make sure to pass a valid `Location` string — either specified by the user or defaulted to their current location.
+"""
+
+ADDITIONAL_INSTRUCTION = """
+Specify the user's location in the `Location` parameter.
+If no location is given then use the agents current location as default.
 """
 
 TOOL_SCHEMA = {
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "Location": "The user's desired location of the forcast"
+            #get the agent's current location and use it as default when the user 
+            #did not specify the location
+        },
+        "required": ["Location"]
+    }
+}
+
+TOOL_SCHEMA_COMPLETE = {
 "name": "get_weather",
     "description": "Returns current weather forcast for the user's location",
     "parameters": {

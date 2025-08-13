@@ -8,6 +8,10 @@ def run(params):
     date = params.get("Date")
     time = params.get("Time")
     status = params.get("Status")
+    if date == "00-00-00":
+        date = ""
+    if time == "00:00":
+        time = ""
     if time == "":
         time = DEFAULT_TIME
     action = params.get("Action") 
@@ -19,7 +23,7 @@ def run(params):
     if action == "set":
         result = insert_reminder(content,date,time)
         if result == "Success":
-            return f"Reminder set: '{content}' at {f'{date} {time}' or 'unspecified time'}"
+            return f"Reminder set: '{content}' at {f'{date} {time}'}"
         else:
             return result
 
@@ -159,7 +163,38 @@ User: I need you to change my reminder from 5 PM to 6 PM
 User: Can you update my reminder to say "project deadline" instead?
 """
 
+ADDITIONAL_INSTRUCTION = """
+In the reminder details include the whole intent of the user. Make sure to include all the details.
+For Date and time, use the format DD-MM-YYYY and HH:MM. And put 00 on unknown fields if the user did not specify the day, month, or time.
+Add 2 hours to the current time if the user says 'later'.
+For the Content use the whole intent of the user in a way that it is a statement not an action.
+If the user wants to get a reminder:
+- In the content put "about" followed by the reminder the user wants.
+- If date is not specified by the user put "" in the date field.
+
+If the user wants to set a reminder:
+- Always generate a natural and specific reminder
+
+If the message continues from a previous one:
+- infer the full intent using that context if possible.
+- use the action of the previous if the user gives vague or no action for the current one
+
+"""
+
 TOOL_SCHEMA = {
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "Content": "Reminder details",
+                "Date": "DD-MM-YYYY",
+                "Time": "HH:MM",
+                "Action": "set/ update/ get/ cancel"
+            },
+            "required": ["Content", "Date", "Time", "Action"]
+        }
+}
+
+TOOL_SCHEMA_COMPLETE = {
     "name": "Reminder",
         "description": "Set, update or get reminders for the user",
         "parameters": {

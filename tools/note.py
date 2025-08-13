@@ -94,16 +94,30 @@ Use this tool when the user wants to jot something down, recall what they've pre
 Example use cases:
 
 User: Make a note that I left my keys in the blue drawer  
-User: Remember that my dog’s name is Coco  
-User: Save a note saying I’m allergic to peanuts  
+User: Remember that my dog`s name is Coco  
+User: Save a note saying I`m allergic to peanuts  
 User: Do I have any notes about my gym routine?  
 User: Can you find the note I left about car maintenance?  
 User: What did I tell you yesterday about the meeting notes?  
 User: Update my note about the neighbor — their name is actually Marie  
-User: Change the note I wrote about the schedule, it’s on Friday now
+User: Change the note I wrote about the schedule, it`s on Friday now
+"""
+
+ADDITIONAL_INSTRUCTION = """
 """
 
 TOOL_SCHEMA = {
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "Content": "Note content",
+                "Action": "set/ update/ get/ cancel"
+            },
+            "required": ["Content", "Action"]
+        }
+}
+
+TOOL_SCHEMA_COMPLETE = {
     "name": "Note",
         "description": "Set, update or get notes for the user",
         "parameters": {

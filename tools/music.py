@@ -9,24 +9,55 @@ def run(params):
 
     ##Return result
 
-TOOL_LONG_DESCRIPTION = """
-A tool to set a reminder, update a reminder, fetch or get a reminder, and cancel a reminder for the user.
-Use this tool when the user want anything to do about reminders.
+TOOL_LONG_DESCRIPTION ="""
+A tool to play or pause music based on user preferences such as title, genre, artist, or playlist.
+
+Use this tool whenever the user wants to listen to music, stop it temporarily, or resume playback. The user might specify a song name, a music genre, an artist/band, or a playlist.
 
 Example use cases:
 
-User: Add a reminder for going to the dentist tommorow at 3 pm
-User: Set a reminder for my dinner later at 7 pm
-User: I need a reminder for ...
-User: Remind me about my ...
-User: Can you cancel my reminder for ...
-User: Do I have a reminder set for tommorow?
-User: Can you look if I have a reminder for ...
-User: I need you to change my reminder for ...
-User: can you update my reminder to ...
+User: Play some jazz music  
+User: Pause the song  
+User: Play "Bohemian Rhapsody"  
+User: Can you play my workout playlist?  
+User: Start playing BTS songs  
+User: Play something by Coldplay  
+User: Resume the music  
+User: Pause the music for now  
+User: I want to listen to chill lo-fi  
+User: Play the next song on my driving playlist  
+User: Can you stop the music?  
+User: Can you turn off the music?
+"""
+
+ADDITIONAL_INSTRUCTION = """
+Extract all relevant music information the user provides — including title, genre, artist, or playlist — but only fill in fields that are explicitly mentioned.
+
+For "Title", prefer full song titles when possible.  
+If the user only says a genre (e.g., "play some jazz"), fill in the Genre field and leave Title blank.  
+If the user mentions an artist or band, place that in the Artist field.  
+If they mention a playlist (e.g., “my workout mix”), assign it to Playlist.
+
+Always set the "Action" as either "play" or "pause" based on the user's intent.
+
+Avoid vague terms like “some music” in the Title field. If no specific song title is given, leave Title blank and use Genre, Artist, or Playlist as appropriate.
 """
 
 TOOL_SCHEMA = {
+      "parameters": {
+          "type": "object",
+          "properties": {
+              "Title": "song title",
+              "Genre": "music genre",
+              "Artist": "artist/band",
+              "Playlist": "music playlist",
+              "Action": "play/ pause"
+          },
+          "required": ["Title/Genre/Artist/Playlist", "Action"]
+        }
+}
+
+TOOL_SCHEMA_COMPLETE = {
       "name": "music",
       "description": "Play or pause music for the user",
       "parameters": {
